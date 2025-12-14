@@ -9,7 +9,7 @@ import (
 )
 
 type HTTPServe struct{
-	Address string
+	Address string `yaml:"address" env-required:"true"`
 }
 
 //env-default:"production"
