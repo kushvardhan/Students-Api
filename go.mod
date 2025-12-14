@@ -1,4 +1,4 @@
-module github.com/kushvardhan/GO-Projects/Students-Api
+module github.com/kushvardhan/Students-Api
 
 go 1.25.3
 
