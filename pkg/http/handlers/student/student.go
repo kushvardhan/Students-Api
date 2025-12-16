@@ -9,6 +9,7 @@ import (
 
 	"github.com/kushvardhan/Students-Api/pkg/utils/response"
 	"github.com/kushvardhan/Students-Api/types"
+	"github.com/go-playground/validator/v10"
 )
 
 func New() http.HandlerFunc {
@@ -22,11 +23,18 @@ func New() http.HandlerFunc {
 				response.WriteJson(w, http.StatusBadRequest, "request body is empty")
 				return
 			}
-			response.WriteJson(w, http.StatusBadRequest, err.Error())
+			response.WriteJson(w, http.StatusBadRequest, response.GeneralError(err))
 			return
 		}
 
+		if err := validator.New().Struct(student); err != nil{
+			validateErrs := err.(validator.ValidationErrors)
+			response.WriteJson(w, http.StatusBadRequest, response.ValidationError(validateErrs))
+			return 
+		}
+
 		slog.Info("Creating a student", "student", student)
+
 
 		response.WriteJson(w, http.StatusCreated, map[string]string{
 			"success": "OK",
