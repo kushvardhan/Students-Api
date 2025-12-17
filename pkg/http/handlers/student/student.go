@@ -7,12 +7,13 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/kushvardhan/Students-Api/pkg/utils/response"
 	"github.com/kushvardhan/Students-Api/types"
-	"github.com/go-playground/validator/v10"
+	"golang.org/x/mod/sumdb/storage"
 )
 
-func New() http.HandlerFunc {
+func New(storage storage.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var student types.Student
@@ -33,11 +34,22 @@ func New() http.HandlerFunc {
 			return 
 		}
 
+		lastId, err := storage.CreateStudent(
+			student.Name,
+			student.Email,
+			student.Age,
+		)
+
+		if err != nil{
+			response.WriteJson(w, http.StatusInternalServerError, err)
+		}
+
+
 		slog.Info("Creating a student", "student", student)
 
 
-		response.WriteJson(w, http.StatusCreated, map[string]string{
-			"success": "OK",
+		response.WriteJson(w, http.StatusCreated, map[string]int64{
+			"id": lastId,
 		})
 	}
 }
